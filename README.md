@@ -8,7 +8,7 @@ spaced-repetition flashcards, auto-graded quizzes, and hands-on journal-entry an
 > **Why I built this:** to prove I can build clean, working software *and* that I know the accounting
 > that underpins every three-statement model — before I have formal work experience to point to.
 
-**Live demo:** _(add your GitHub Pages URL here once deployed)_
+**Live demo:** https://ai-skywalker-nh.github.io/ledger-accounting-course/
 
 ---
 
