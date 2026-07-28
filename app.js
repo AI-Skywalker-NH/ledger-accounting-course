@@ -198,57 +198,100 @@
   /* =======================================================================
      HOME
      ======================================================================= */
+  function moduleCardHTML(entry, courseModules) {
+    const mod = Ledger.modules[entry.id];
+    if (entry.status === "available" && mod) {
+      const p = moduleProgress(entry.id);
+      const idx = courseModules.indexOf(entry) + 1;
+      return `
+        <a class="card module-card" href="#/m/${entry.id}">
+          <div class="mc-top">
+            <div>
+              <div class="mc-meta">Module ${idx} · ${mod.est || ""}</div>
+              <h3>${mod.title}</h3>
+            </div>
+            ${ring(p.pct)}
+          </div>
+          <p class="muted" style="margin:0">${mod.subtitle}</p>
+          <div class="progress-bar"><i style="width:${p.pct}%"></i></div>
+          <div class="btn-row"><span class="btn btn-primary">${p.pct > 0 ? "Continue" : "Start"} →</span></div>
+        </a>`;
+    }
+    return `
+      <div class="card module-card locked">
+        <div class="mc-top">
+          <div>
+            <div class="mc-meta">${entry.est || ""}</div>
+            <h3>${entry.title || (mod && mod.title) || "Module"}</h3>
+          </div>
+          <span class="lock-tag">Coming soon</span>
+        </div>
+        <p class="muted" style="margin:0">Planned for a future release.</p>
+      </div>`;
+  }
+
+  function allAvailableIds() {
+    const out = [];
+    COURSES.forEach((c) => c.modules.forEach((e) => {
+      if (e.status === "available" && Ledger.modules[e.id]) out.push(e.id);
+    }));
+    return out;
+  }
+  function overallStats() {
+    const ids = allAvailableIds();
+    if (!ids.length) return { pct: 0, complete: 0, total: 0 };
+    const pcts = ids.map((id) => moduleProgress(id).pct);
+    return {
+      pct: Math.round(pcts.reduce((a, b) => a + b, 0) / ids.length),
+      complete: pcts.filter((p) => p === 100).length,
+      total: ids.length,
+    };
+  }
+  function nextModuleId() {
+    const ids = allAvailableIds();
+    const started = ids.find((id) => { const p = moduleProgress(id).pct; return p > 0 && p < 100; });
+    return started || ids.find((id) => moduleProgress(id).pct < 100) || ids[0] || "module-01";
+  }
+
   function renderHome() {
-    const cards = COURSE.modules
-      .map((entry) => {
-        const mod = Ledger.modules[entry.id];
-        if (entry.status === "available" && mod) {
-          const p = moduleProgress(entry.id);
-          return `
-          <a class="card module-card" href="#/m/${entry.id}">
-            <div class="mc-top">
-              <div>
-                <div class="mc-meta">Module ${romanOrNum(entry.id)} · ${mod.est || ""}</div>
-                <h3>${mod.title}</h3>
-              </div>
-              ${ring(p.pct)}
-            </div>
-            <p class="muted" style="margin:0">${mod.subtitle}</p>
-            <div class="progress-bar"><i style="width:${p.pct}%"></i></div>
-            <div class="btn-row"><span class="btn btn-primary">${p.pct > 0 ? "Continue" : "Start"} →</span></div>
-          </a>`;
-        }
-        return `
-          <div class="card module-card locked">
-            <div class="mc-top">
-              <div>
-                <div class="mc-meta">${entry.est || ""}</div>
-                <h3>${entry.title}</h3>
-              </div>
-              <span class="lock-tag">Coming soon</span>
-            </div>
-            <p class="muted" style="margin:0">Planned for a future release.</p>
-          </div>`;
-      })
-      .join("");
+    const ov = overallStats();
+    const due = dueCountAll();
+    const s = STATE.streak;
+    const nextId = nextModuleId();
+    const started = ov.pct > 0;
+
+    const sections = COURSES.map((c) => {
+      const avail = c.modules.filter((e) => e.status === "available" && Ledger.modules[e.id]).length;
+      const cards = c.modules.map((e) => moduleCardHTML(e, c.modules)).join("");
+      return `
+        <div class="section-title">
+          <div><h2>${c.title}</h2><div class="muted" style="font-size:13px">${c.subtitle}</div></div>
+          <span class="muted">${avail ? avail + " available" : "In development"}</span>
+        </div>
+        <p class="muted course-tagline">${c.tagline}</p>
+        <div class="module-grid">${cards}</div>`;
+    }).join("");
 
     APP.innerHTML = `
       <section class="hero">
-        <span class="eyebrow">Interactive Course</span>
-        <h1>${COURSE.title}</h1>
-        <p>${COURSE.tagline}</p>
+        <span class="eyebrow">Interactive · self-paced</span>
+        <h1>${PLATFORM.title}</h1>
+        <p>${PLATFORM.tagline}</p>
         <div class="btn-row">
-          <a class="btn btn-primary btn-lg" href="#/m/module-01">Start Module 1 →</a>
-          <a class="btn btn-lg btn-ghost" href="#/m/module-01/cards" style="color:#eaf1f7;border-color:rgba(255,255,255,.25)">Review flashcards</a>
+          <a class="btn btn-primary btn-lg" href="#/m/${nextId}">${started ? "Continue where you left off" : "Start Module 1"} →</a>
+          <a class="btn btn-lg btn-ghost" href="#/m/${nextId}/cards" style="color:#eaf1f7;border-color:rgba(255,255,255,.25)">Review flashcards</a>
         </div>
       </section>
 
-      <div class="section-title"><h2>Modules</h2><span class="muted">${countAvailable()} available · more in progress</span></div>
-      <div class="module-grid">${cards}</div>
+      <div class="overview">
+        <div class="card ov-tile">${ring(ov.pct)}<div><div class="ov-lab">Overall mastery</div></div></div>
+        <div class="card ov-tile"><div><div class="ov-num">${ov.complete}/${ov.total}</div><div class="ov-lab">Modules complete</div></div></div>
+        <div class="card ov-tile"><div><div class="ov-num" style="color:${due > 0 ? "var(--gold)" : "inherit"}">${due}</div><div class="ov-lab">Cards due</div></div></div>
+        <div class="card ov-tile"><div><div class="ov-num">${s.current || 0} 🔥</div><div class="ov-lab">Day streak</div></div></div>
+      </div>
+
+      ${sections}
     `;
-  }
-  function countAvailable() {
-    return COURSE.modules.filter((e) => e.status === "available" && Ledger.modules[e.id]).length;
   }
   function romanOrNum(id) {
     const m = id.match(/(\d+)/);
