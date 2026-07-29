@@ -19,8 +19,10 @@
     d.setDate(d.getDate() + days);
     return d.toISOString().slice(0, 10);
   };
-  const fmtMoney = (n) =>
-    "$" + Number(n).toLocaleString("en-US", { maximumFractionDigits: 0 });
+  const fmtMoney = (n) => {
+    n = Number(n);
+    return (n < 0 ? "-$" : "$") + Math.abs(n).toLocaleString("en-US", { maximumFractionDigits: 0 });
+  };
 
   function toast(msg) {
     let t = $(".toast");
