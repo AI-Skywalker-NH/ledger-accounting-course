@@ -21,24 +21,27 @@ spaced-repetition flashcards, auto-graded quizzes, and hands-on journal-entry an
 - **Quizzes** — auto-graded multiple-choice with instant explanations and a saved best score.
 - **Drills** — two kinds of hands-on reps:
   - **Journal entries** — pick the correct debit and credit accounts for a transaction.
-  - **Modeling** — fill in the missing cells of a mini income statement, the accounting equation, or a
-    retained-earnings roll-forward, validated against the correct figures.
+  - **Excel builds** — a required, **from-scratch in-screen spreadsheet** with real formulas
+    (`=B2-B3`, `=SUM(B2:B5)`). The drill gives you the inputs and the results to produce; you lay out
+    the statement and compute it yourself. It's **keyboard-first**: clicking cells is disabled (navigate
+    with arrows / Tab / Enter / F2), and a live mouse-usage counter — with an optional strict "mouse =
+    fail" mode — trains you to work without the trackpad, the way modelers do.
+- **Excel Shortcuts reference** — a searchable, categorized tab of Windows + Mac shortcuts.
 - **Progress & streaks** — per-module mastery %, lesson/card/quiz/drill completion, and a daily study
   streak. All saved locally in your browser.
 
-## Module 1 (fully built)
+## Course 1 — Accounting Foundations (Modules 1–6 built)
 
-**The Accounting Equation & The Three Statements** — 6 lessons, 16 flashcards, 8 quiz questions, and
-7 drills covering:
+1. The Accounting Equation & The Three Statements
+2. Debits, Credits & the T-Account
+3. The Income Statement in Depth
+4. The Balance Sheet in Depth
+5. The Statement of Cash Flows
+6. Linking the Three Statements
 
-1. Accounting: the language of business
-2. The accounting equation (`Assets = Liabilities + Equity`)
-3. Assets, liabilities & equity
-4. Debits & credits (the **DEALER** framework)
-5. How transactions move the equation (double-entry)
-6. The three statements and how they link
-
-Modules 2–8 are outlined in the app as a roadmap.
+Each module has ~6 lessons, ~16 flashcards, 8 quiz questions, and hands-on drills. Modules 7–8 and a
+second course (**Financial Statement Analysis & Modeling** — spreading, ratios, three-statement/DCF/LBO
+models) are scaffolded in the app as a roadmap.
 
 ## Tech
 

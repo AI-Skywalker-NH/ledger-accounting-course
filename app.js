@@ -24,6 +24,10 @@
     return (n < 0 ? "-$" : "$") + Math.abs(n).toLocaleString("en-US", { maximumFractionDigits: 0 });
   };
 
+  // Track per-view intervals (drill timers) so we can stop them on navigation.
+  let activeTimers = [];
+  function clearTimers() { activeTimers.forEach(clearInterval); activeTimers = []; }
+
   function toast(msg) {
     let t = $(".toast");
     if (!t) {
@@ -184,17 +188,25 @@
   function parseHash() {
     const h = location.hash.replace(/^#\/?/, "");
     const parts = h.split("/").filter(Boolean);
+    if (parts[0] === "shortcuts") return { view: "shortcuts" };
     if (parts[0] === "m" && parts[1]) return { view: "module", mid: parts[1], tab: parts[2] || "learn" };
     return { view: "home" };
   }
   function go(hash) { location.hash = hash; }
 
+  function highlightNav(view) {
+    $$(".topnav a").forEach((a) => a.classList.toggle("active", a.dataset.nav === (view === "shortcuts" ? "shortcuts" : "home")));
+  }
+
   function route() {
+    clearTimers();
     const r = parseHash();
     window.scrollTo(0, 0);
-    if (r.view === "module" && Ledger.modules[r.mid]) renderModule(r.mid, r.tab);
+    if (r.view === "shortcuts") renderShortcuts();
+    else if (r.view === "module" && Ledger.modules[r.mid]) renderModule(r.mid, r.tab);
     else renderHome();
     renderTopbar();
+    highlightNav(r.view);
   }
 
   /* =======================================================================
@@ -565,21 +577,24 @@
     const drills = mod.drills || [];
 
     panel.innerHTML = `
-      <p class="muted" style="max-width:64ch">Hands-on reps. Journal entries drill the debit/credit mechanics;
-      modeling problems drill the statement math you'll use in every financial model. Check each one for instant feedback.</p>
+      <p class="muted" style="max-width:70ch">Hands-on reps. Journal-entry drills reinforce the debit/credit mechanics.
+      Modeling drills must be <strong>built from scratch on the in-screen spreadsheet</strong> — lay out the statement
+      and use real formulas, keyboard-first, just like you would in Excel.</p>
       <div id="drillList" style="display:flex;flex-direction:column;gap:16px;margin-top:16px"></div>`;
 
     const list = $("#drillList");
     drills.forEach((d, idx) => {
       const wrap = document.createElement("div");
-      wrap.className = "q-card card";
-      wrap.style.maxWidth = "720px";
-      wrap.style.margin = "0";
-      if (d.type === "journal") wrap.innerHTML = journalHTML(d, idx, m);
-      else wrap.innerHTML = modelHTML(d, idx, m);
       list.appendChild(wrap);
-      if (d.type === "journal") wireJournal(wrap, d, mid);
-      else wireModel(wrap, d, mid);
+      if (d.type === "journal") {
+        wrap.className = "q-card card";
+        wrap.style.maxWidth = "720px";
+        wrap.style.margin = "0";
+        wrap.innerHTML = journalHTML(d, idx, m);
+        wireJournal(wrap, d, mid);
+      } else {
+        sheetDrill(wrap, d, idx, mid);
+      }
     });
   }
 
@@ -616,42 +631,93 @@
     };
   }
 
-  function modelHTML(d, idx, m) {
-    const done = m.drills[d.id];
-    const rows = d.rows
-      .map((r) => {
-        if (r.given) return `<tr class="given"><td>${r.label}</td><td>${fmtMoney(r.value)}</td></tr>`;
-        return `<tr><td>${r.label} <span class="muted" style="font-size:12px">(${r.hint})</span></td>
-          <td><input class="model-input" inputmode="numeric" data-key="${r.key}" placeholder="0" aria-label="${r.label}" /></td></tr>`;
-      })
-      .join("");
-    return `
-      <div class="study-meta"><span>Modeling · Drill ${idx + 1}</span><span>${done ? "✓ done" : ""}</span></div>
-      <div class="q-prompt" style="font-size:17px">${d.prompt}</div>
-      <table class="model-table">${rows}</table>
-      <div id="fb-${d.id}"></div>
-      <div class="btn-row" style="margin-top:14px"><button class="btn btn-primary" data-role="check">Check answer</button></div>`;
-  }
-  function wireModel(wrap, d, mid) {
+  // Excel-build drill: the modeling problem must be built from scratch on the
+  // in-screen spreadsheet. Given rows are the inputs; answer rows are required
+  // results you must produce (with formulas when inputs exist to reference).
+  function sheetDrill(wrap, d, idx, mid) {
+    const givens = d.rows.filter((r) => r.given);
+    const targets = d.rows.filter((r) => r.key).map((r) => ({ label: r.label, target: r.answer, hint: r.hint }));
+    const hasGivens = d.rows.some((r) => r.given && typeof r.value === "number");
+    const money = (v) => (d.prefix === "$" ? fmtMoney(v) : v.toLocaleString("en-US"));
+
+    wrap.className = "card sheet-drill";
+    wrap.innerHTML = `
+      <div class="sd-left">
+        <div class="study-meta"><span>Modeling · Drill ${idx + 1} — build it in the sheet</span><span id="sd-badge-${d.id}"></span></div>
+        <div class="q-prompt" style="font-size:17px">${d.prompt}</div>
+        <div class="sd-h">Given inputs</div>
+        <ul class="sd-given">${givens.length ? givens.map((g) => `<li>${g.label}: <strong>${money(g.value)}</strong></li>`).join("") : '<li class="muted">(the numbers are stated in the prompt)</li>'}</ul>
+        <div class="sd-h">Build these results ${hasGivens ? "with formulas" : ""}</div>
+        <ul class="sd-req" id="sd-checks-${d.id}">${targets.map((t, i) => `<li data-i="${i}"><span class="ck">○</span><span>${t.label} <span class="muted">— ${t.hint}</span></span></li>`).join("")}</ul>
+        <label class="sd-strict"><input type="checkbox" id="sd-strict-${d.id}" /> Strict keyboard-only (any mouse use fails the drill)</label>
+        <div id="sd-fb-${d.id}"></div>
+        <div class="btn-row" style="margin-top:12px">
+          <button class="btn btn-primary" data-role="check">Check my sheet</button>
+          <button class="btn btn-ghost" data-role="reset">Reset sheet</button>
+        </div>
+        <div class="sd-help muted">Keyboard: arrows move · Enter/Tab commit · <code>F2</code> edit · type <code>=</code> to start a formula. Supports <code>+ − × ÷</code>, parentheses, <code>SUM</code>, <code>AVERAGE</code>, <code>MIN</code>, <code>MAX</code>, and ranges like <code>B2:B5</code>. Clicking cells is disabled — navigate with the keyboard.</div>
+      </div>
+      <div class="sd-right">
+        <div class="sd-grid-head">
+          <span class="mouse-badge" id="sd-mouse-${d.id}">🖱️ 0</span>
+          <span class="timer" id="sd-timer-${d.id}">0:00</span>
+        </div>
+        <div class="sheet-host" id="sd-host-${d.id}"></div>
+      </div>`;
+
+    let mouse = 0;
+    const start = Date.now();
+    const badge = $(`#sd-mouse-${d.id}`, wrap);
+    const timerEl = $(`#sd-timer-${d.id}`, wrap);
+    const grid = SheetGrid($(`#sd-host-${d.id}`, wrap), {
+      rows: 18, cols: 6,
+      onMouse: () => { mouse++; badge.textContent = "🖱️ " + mouse; badge.classList.add("bad"); },
+    });
+    const timer = setInterval(() => {
+      const s = Math.floor((Date.now() - start) / 1000);
+      timerEl.textContent = Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
+    }, 1000);
+    activeTimers.push(timer);
+
+    $('[data-role="reset"]', wrap).onclick = () => {
+      grid.reset();
+      mouse = 0; badge.textContent = "🖱️ 0"; badge.classList.remove("bad");
+      $$(`#sd-checks-${d.id} li`, wrap).forEach((li) => { $(".ck", li).textContent = "○"; li.classList.remove("ok", "no"); });
+      $(`#sd-fb-${d.id}`, wrap).innerHTML = "";
+      grid.focus();
+    };
+
     $('[data-role="check"]', wrap).onclick = () => {
-      const inputs = $$(".model-input", wrap);
-      let allRight = true, anyBlank = false;
-      inputs.forEach((inp) => {
-        const key = inp.dataset.key;
-        const target = d.rows.find((r) => r.key === key).answer;
-        const val = parseFloat((inp.value || "").replace(/[^0-9.\-]/g, ""));
-        inp.classList.remove("ok", "no");
-        if (inp.value.trim() === "") { anyBlank = true; allRight = false; return; }
-        if (val === target) inp.classList.add("ok");
-        else { inp.classList.add("no"); allRight = false; }
-      });
-      const fb = $(`#fb-${d.id}`, wrap);
-      if (anyBlank && inputs.every((i) => i.value.trim() === "")) {
-        fb.innerHTML = `<div class="explain bad"><strong>Fill in the highlighted cells.</strong></div>`;
+      const strict = $(`#sd-strict-${d.id}`, wrap).checked;
+      const fb = $(`#sd-fb-${d.id}`, wrap);
+      if (strict && mouse > 0) {
+        fb.innerHTML = `<div class="explain bad"><strong>Strict mode: mouse used ${mouse}×.</strong> Reset and complete it keyboard-only to pass.</div>`;
         return;
       }
-      fb.innerHTML = `<div class="explain ${allRight ? "good" : "bad"}"><strong>${allRight ? "Correct." : "Check the red cells."}</strong> ${d.explain}</div>`;
-      if (allRight) markDrill(mid, d.id, wrap);
+      const snap = grid.snapshot();
+      const used = new Set();
+      let hardcoded = false;
+      const results = targets.map((t) => {
+        // Prefer a distinct formula cell matching the target value.
+        let hit = snap.find((c) => !used.has(c.ref) && c.value != null && Math.abs(c.value - t.target) <= 0.01 && (!hasGivens || c.isFormula));
+        if (hit) { used.add(hit.ref); return true; }
+        // Fell back: is the value present but hardcoded where a formula was expected?
+        const soft = snap.find((c) => !used.has(c.ref) && c.value != null && Math.abs(c.value - t.target) <= 0.01);
+        if (soft && hasGivens) { used.add(soft.ref); hardcoded = true; }
+        return false;
+      });
+
+      const lis = $$(`#sd-checks-${d.id} li`, wrap);
+      results.forEach((ok, i) => { $(".ck", lis[i]).textContent = ok ? "✓" : "✗"; lis[i].classList.toggle("ok", ok); lis[i].classList.toggle("no", !ok); });
+
+      if (results.every(Boolean)) {
+        clearInterval(timer);
+        fb.innerHTML = `<div class="explain good"><strong>Correct — sheet built.</strong> ${d.explain}${mouse === 0 ? " 🏆 Keyboard-only!" : ""}</div>`;
+        markDrill(mid, d.id, wrap);
+        $(`#sd-badge-${d.id}`, wrap).textContent = "✓ done";
+      } else {
+        fb.innerHTML = `<div class="explain bad"><strong>Not there yet.</strong> ${hardcoded ? "Some results match but are hardcoded — build them as formulas that reference your input cells (start the cell with <code>=</code>)." : "Build every required result as a computed cell on the grid."}</div>`;
+      }
     };
   }
 
@@ -668,6 +734,36 @@
       const all = (mod.drills || []).every((x) => m.drills[x.id]);
       if (all) toast("All drills complete! 💪");
     }
+  }
+
+  /* =======================================================================
+     EXCEL SHORTCUTS
+     ======================================================================= */
+  function renderShortcuts() {
+    APP.innerHTML = `
+      <div class="crumb"><a href="#/">Home</a> › Excel Shortcuts</div>
+      <div class="pagehead">
+        <span class="eyebrow">Reference</span>
+        <h1>Excel Keyboard Shortcuts</h1>
+        <p>An exhaustive, searchable reference for Windows and Mac. Working a model keyboard-first is the single biggest speed gain in Excel — the modeling drills enforce it.</p>
+      </div>
+      <input class="sc-search" id="scSearch" placeholder="Search shortcuts…  (e.g. paste, sum, format, hide)" aria-label="Search shortcuts" />
+      <p class="muted sc-note">Mac keys: <code>⌘</code> Command · <code>⌥</code> Option · <code>⌃</code> Control · <code>⇧</code> Shift · <code>fn</code> Function. On Mac, the function keys (F1–F12) may need <code>fn</code>, or enable “Use F1, F2, etc. as standard function keys” in System Settings. Some shortcuts differ between Excel for Windows and Mac; these follow Microsoft's official reference — verify edge cases in your version.</p>
+      <div id="scList"></div>`;
+
+    const draw = (q) => {
+      q = (q || "").trim().toLowerCase();
+      const html = SHORTCUTS.map((g) => {
+        const rows = g.items.filter((it) => !q || (it.action + " " + it.win + " " + it.mac).toLowerCase().includes(q));
+        if (!rows.length) return "";
+        return `<div class="sc-group"><h2>${g.group}</h2>
+          <table class="sc-table"><thead><tr><th>Action</th><th>Windows</th><th>Mac</th></tr></thead>
+          <tbody>${rows.map((it) => `<tr><td>${it.action}</td><td><kbd>${it.win}</kbd></td><td><kbd>${it.mac}</kbd></td></tr>`).join("")}</tbody></table></div>`;
+      }).join("");
+      $("#scList").innerHTML = html || '<div class="empty">No shortcuts match your search.</div>';
+    };
+    draw("");
+    $("#scSearch").oninput = (e) => draw(e.target.value);
   }
 
   /* --------------------------------------------------------------- boot */
