@@ -34,7 +34,7 @@ window.COURSES = [
       { id: "module-01", status: "available" },
       { id: "module-02", status: "available" },
       { id: "module-03", status: "available" },
-      { id: "module-04", status: "coming-soon", title: "The Balance Sheet in Depth", est: "~55 min" },
+      { id: "module-04", status: "available" },
       { id: "module-05", status: "coming-soon", title: "The Statement of Cash Flows", est: "~60 min" },
       { id: "module-06", status: "coming-soon", title: "Linking the Three Statements", est: "~70 min" },
       { id: "module-07", status: "coming-soon", title: "Accrual vs. Cash Accounting", est: "~45 min" },
