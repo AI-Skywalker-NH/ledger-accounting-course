@@ -655,7 +655,7 @@
           <button class="btn btn-primary" data-role="check">Check my sheet</button>
           <button class="btn btn-ghost" data-role="reset">Reset sheet</button>
         </div>
-        <div class="sd-help muted">Keyboard: arrows move · Enter/Tab commit · <code>F2</code> edit · type <code>=</code> to start a formula. Supports <code>+ − × ÷</code>, parentheses, <code>SUM</code>, <code>AVERAGE</code>, <code>MIN</code>, <code>MAX</code>, and ranges like <code>B2:B5</code>. Clicking cells is disabled — navigate with the keyboard.</div>
+        <div class="sd-help muted">Keyboard: arrows move · Enter/Tab commit · <code>F2</code> edit · type <code>=</code> to start a formula. Supports <code>+ − × ÷</code>, <code>^</code>, parentheses, <code>SUM</code>, <code>AVERAGE</code>, <code>MIN</code>, <code>MAX</code>, <code>POWER</code>, <code>SQRT</code>, and ranges like <code>B2:B5</code>. Clicking cells is disabled — navigate with the keyboard.</div>
       </div>
       <div class="sd-right">
         <div class="sd-grid-head">

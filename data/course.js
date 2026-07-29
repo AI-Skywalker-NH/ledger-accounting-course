@@ -48,7 +48,7 @@ window.COURSES = [
     tagline:
       "The end goal: spreading financials, ratio analysis, and building three-statement, DCF, and LBO models. In development — the foundations course above prepares you for it.",
     modules: [
-      { id: "fm-01", status: "coming-soon", title: "Reading & Spreading Financial Statements", est: "~60 min" },
+      { id: "fm-01", status: "available" },
       { id: "fm-02", status: "coming-soon", title: "Ratio Analysis: Liquidity, Leverage, Profitability", est: "~60 min" },
       { id: "fm-03", status: "coming-soon", title: "Building a Three-Statement Model", est: "~90 min" },
       { id: "fm-04", status: "coming-soon", title: "Forecasting Revenue & Operating Drivers", est: "~70 min" },

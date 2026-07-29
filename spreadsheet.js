@@ -87,6 +87,8 @@
           case "MAX": return Math.max.apply(null, nums);
           case "ABS": return Math.abs(nums[0]);
           case "ROUND": return Number(nums[0].toFixed(nums[1] || 0));
+          case "POWER": return Math.pow(nums[0], nums[1]);
+          case "SQRT": return Math.sqrt(nums[0]);
           default: throw new Error("FN");
         }
       };
@@ -105,10 +107,10 @@
         }
         return { num: parseExpr() };
       }
-      function parseFactor() {
+      function parsePrimary() {
         const tk = peek();
-        if (tk.type === "-") { next(); return -parseFactor(); }
-        if (tk.type === "+") { next(); return parseFactor(); }
+        if (tk.type === "-") { next(); return -parsePower(); }
+        if (tk.type === "+") { next(); return parsePower(); }
         if (tk.type === "(") { next(); const v = parseExpr(); expect(")"); return v; }
         if (tk.type === "num") { next(); return tk.v; }
         if (tk.type === "id") {
@@ -120,10 +122,15 @@
         }
         throw new Error("ERR");
       }
+      function parsePower() {
+        const base = parsePrimary();
+        if (peek().type === "^") { next(); return Math.pow(base, parsePower()); } // right-associative
+        return base;
+      }
       function parseTerm() {
-        let v = parseFactor();
+        let v = parsePower();
         while (peek().type === "*" || peek().type === "/") {
-          const op = next().type; const r = parseFactor();
+          const op = next().type; const r = parsePower();
           v = op === "*" ? v * r : v / r;
         }
         return v;
@@ -147,7 +154,7 @@
       while (i < str.length) {
         const ch = str[i];
         if (ch === " ") { i++; continue; }
-        if ("()+-*/,:".includes(ch)) { t.push({ type: ch }); i++; continue; }
+        if ("()+-*/,:^".includes(ch)) { t.push({ type: ch }); i++; continue; }
         if (/[0-9.]/.test(ch)) { let j = i; while (j < str.length && /[0-9.]/.test(str[j])) j++; t.push({ type: "num", v: parseFloat(str.slice(i, j)) }); i = j; continue; }
         if (/[A-Za-z]/.test(ch)) { let j = i; while (j < str.length && /[A-Za-z0-9]/.test(str[j])) j++; t.push({ type: "id", v: str.slice(i, j) }); i = j; continue; }
         throw new Error("ERR");
