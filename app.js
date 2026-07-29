@@ -649,7 +649,7 @@
         <ul class="sd-given">${givens.length ? givens.map((g) => `<li>${g.label}: <strong>${money(g.value)}</strong></li>`).join("") : '<li class="muted">(the numbers are stated in the prompt)</li>'}</ul>
         <div class="sd-h">Build these results ${hasGivens ? "with formulas" : ""}</div>
         <ul class="sd-req" id="sd-checks-${d.id}">${targets.map((t, i) => `<li data-i="${i}"><span class="ck">○</span><span>${t.label} <span class="muted">— ${t.hint}</span></span></li>`).join("")}</ul>
-        <label class="sd-strict"><input type="checkbox" id="sd-strict-${d.id}" /> Strict keyboard-only (any mouse use fails the drill)</label>
+        <label class="sd-strict"><input type="checkbox" id="sd-strict-${d.id}" checked /> Strict keyboard-only (any mouse use fails the drill)</label>
         <div id="sd-fb-${d.id}"></div>
         <div class="btn-row" style="margin-top:12px">
           <button class="btn btn-primary" data-role="check">Check my sheet</button>

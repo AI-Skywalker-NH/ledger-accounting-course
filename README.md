@@ -30,7 +30,7 @@ spaced-repetition flashcards, auto-graded quizzes, and hands-on journal-entry an
 - **Progress & streaks** — per-module mastery %, lesson/card/quiz/drill completion, and a daily study
   streak. All saved locally in your browser.
 
-## Course 1 — Accounting Foundations (Modules 1–6 built)
+## Course 1 — Accounting Foundations (complete, Modules 1–8)
 
 1. The Accounting Equation & The Three Statements
 2. Debits, Credits & the T-Account
@@ -38,10 +38,12 @@ spaced-repetition flashcards, auto-graded quizzes, and hands-on journal-entry an
 4. The Balance Sheet in Depth
 5. The Statement of Cash Flows
 6. Linking the Three Statements
+7. Accrual vs. Cash Accounting
+8. Working Capital & the Cash Cycle
 
-Each module has ~6 lessons, ~16 flashcards, 8 quiz questions, and hands-on drills. Modules 7–8 and a
-second course (**Financial Statement Analysis & Modeling** — spreading, ratios, three-statement/DCF/LBO
-models) are scaffolded in the app as a roadmap.
+Each module has ~6 lessons, ~16 flashcards, 8 quiz questions, and hands-on drills. A second course —
+**Financial Statement Analysis & Modeling** (spreading, ratios, three-statement / DCF / LBO models) —
+is scaffolded in the app as a roadmap.
 
 ## Tech
 

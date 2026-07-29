@@ -37,8 +37,8 @@ window.COURSES = [
       { id: "module-04", status: "available" },
       { id: "module-05", status: "available" },
       { id: "module-06", status: "available" },
-      { id: "module-07", status: "coming-soon", title: "Accrual vs. Cash Accounting", est: "~45 min" },
-      { id: "module-08", status: "coming-soon", title: "Working Capital & the Cash Cycle", est: "~50 min" },
+      { id: "module-07", status: "available" },
+      { id: "module-08", status: "available" },
     ],
   },
   {
