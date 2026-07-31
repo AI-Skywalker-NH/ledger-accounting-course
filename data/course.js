@@ -54,8 +54,8 @@ window.COURSES = [
       { id: "fm-04", status: "available" },
       { id: "fm-05", status: "available" },
       { id: "fm-06", status: "available" },
-      { id: "fm-07", status: "coming-soon", title: "Comparable Company Analysis", est: "~60 min" },
-      { id: "fm-08", status: "coming-soon", title: "LBO Modeling Basics", est: "~90 min" },
+      { id: "fm-07", status: "available" },
+      { id: "fm-08", status: "available" },
     ],
   },
 ];

@@ -41,9 +41,23 @@ spaced-repetition flashcards, auto-graded quizzes, and hands-on journal-entry an
 7. Accrual vs. Cash Accounting
 8. Working Capital & the Cash Cycle
 
-Each module has ~6 lessons, ~16 flashcards, 8 quiz questions, and hands-on drills. A second course —
-**Financial Statement Analysis & Modeling** (spreading, ratios, three-statement / DCF / LBO models) —
-is scaffolded in the app as a roadmap.
+Each module has ~6 lessons, ~16 flashcards, 8 quiz questions, and hands-on drills.
+
+## Course 2 — Financial Statement Analysis & Modeling (complete, FM-1–FM-8)
+
+1. Reading & Spreading Financial Statements
+2. Ratio Analysis (Liquidity, Leverage, Profitability, Efficiency, DuPont)
+3. Building a Three-Statement Model
+4. Forecasting Revenue & Operating Drivers
+5. The Cash Flow Bridge & Circularity (free cash flow)
+6. DCF Valuation
+7. Comparable Company Analysis
+8. LBO Modeling Basics
+
+Course 2's drills are **all in-screen, from-scratch spreadsheet builds** — you construct the model with
+real formulas, keyboard-first. Highlights: a full three-statement model that recomputes to a zero
+balance check (FM-3), a complete DCF that resolves to $10.00/share (FM-6), and an LBO returns build with
+MOIC and IRR (FM-8).
 
 ## Tech
 
