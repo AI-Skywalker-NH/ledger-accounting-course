@@ -50,8 +50,8 @@ window.COURSES = [
     modules: [
       { id: "fm-01", status: "available" },
       { id: "fm-02", status: "available" },
-      { id: "fm-03", status: "coming-soon", title: "Building a Three-Statement Model", est: "~90 min" },
-      { id: "fm-04", status: "coming-soon", title: "Forecasting Revenue & Operating Drivers", est: "~70 min" },
+      { id: "fm-03", status: "available" },
+      { id: "fm-04", status: "available" },
       { id: "fm-05", status: "coming-soon", title: "The Cash Flow Bridge & Circularity", est: "~60 min" },
       { id: "fm-06", status: "coming-soon", title: "DCF Valuation", est: "~90 min" },
       { id: "fm-07", status: "coming-soon", title: "Comparable Company Analysis", est: "~60 min" },

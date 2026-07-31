@@ -670,7 +670,7 @@
     const badge = $(`#sd-mouse-${d.id}`, wrap);
     const timerEl = $(`#sd-timer-${d.id}`, wrap);
     const grid = SheetGrid($(`#sd-host-${d.id}`, wrap), {
-      rows: 18, cols: 6,
+      rows: 20, cols: 6,
       onMouse: () => { mouse++; badge.textContent = "🖱️ " + mouse; badge.classList.add("bad"); },
     });
     const timer = setInterval(() => {
