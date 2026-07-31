@@ -56,6 +56,8 @@ window.COURSES = [
       { id: "fm-06", status: "available" },
       { id: "fm-07", status: "available" },
       { id: "fm-08", status: "available" },
+      { id: "fm-09", status: "available" },
+      { id: "fm-10", status: "available" },
     ],
   },
 ];
