@@ -85,9 +85,9 @@ window.COURSES = [
       "The 'how': the tools and behaviors that make an analyst effective — Leadership Principles, the narrative/white-paper writing culture, business reviews, SQL & data fundamentals, financial systems, simplifying complexity, driving programs to execution, and AI-augmented analysis.",
     modules: [
       { id: "ot-01", status: "available" },
-      { id: "ot-02", status: "coming-soon", title: "The Writing Culture: Narratives & White Papers", est: "~60 min" },
+      { id: "ot-02", status: "available" },
       { id: "ot-03", status: "coming-soon", title: "Business Reviews & Mechanisms", est: "~50 min" },
-      { id: "ot-04", status: "coming-soon", title: "SQL & Data Fundamentals for Analysts", est: "~80 min" },
+      { id: "ot-04", status: "available" },
       { id: "ot-05", status: "coming-soon", title: "Data Tools & Financial Systems", est: "~50 min" },
       { id: "ot-06", status: "coming-soon", title: "Simplifying Complexity & Data Storytelling", est: "~50 min" },
       { id: "ot-07", status: "coming-soon", title: "Driving Programs from Concept to Execution", est: "~60 min" },
