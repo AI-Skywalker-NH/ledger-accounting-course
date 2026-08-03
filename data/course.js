@@ -68,8 +68,8 @@ window.COURSES = [
       "The 'what': understand a transportation/logistics network at a granular level and turn it into financial insight — the role, the lingo, cost drivers, metrics, forecasting, variance analysis, and cost-savings business cases. Speak to the modeling and perform it.",
     modules: [
       { id: "of-01", status: "available" },
-      { id: "of-02", status: "coming-soon", title: "How the Fulfillment & Transportation Network Works", est: "~65 min" },
-      { id: "of-03", status: "coming-soon", title: "The Language of Operations", est: "~50 min" },
+      { id: "of-02", status: "available" },
+      { id: "of-03", status: "available" },
       { id: "of-04", status: "coming-soon", title: "Cost Drivers & Unit Economics", est: "~70 min" },
       { id: "of-05", status: "coming-soon", title: "Operational & Financial Metrics (WBR / MBR)", est: "~60 min" },
       { id: "of-06", status: "coming-soon", title: "Forecasting, Budgeting & the Annual Plan", est: "~70 min" },
