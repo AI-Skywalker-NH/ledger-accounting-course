@@ -86,9 +86,9 @@ window.COURSES = [
     modules: [
       { id: "ot-01", status: "available" },
       { id: "ot-02", status: "available" },
-      { id: "ot-03", status: "coming-soon", title: "Business Reviews & Mechanisms", est: "~50 min" },
+      { id: "ot-03", status: "available" },
       { id: "ot-04", status: "available" },
-      { id: "ot-05", status: "coming-soon", title: "Data Tools & Financial Systems", est: "~50 min" },
+      { id: "ot-05", status: "available" },
       { id: "ot-06", status: "coming-soon", title: "Simplifying Complexity & Data Storytelling", est: "~50 min" },
       { id: "ot-07", status: "coming-soon", title: "Driving Programs from Concept to Execution", est: "~60 min" },
       { id: "ot-08", status: "coming-soon", title: "AI-Augmented Financial Analysis", est: "~55 min" },
