@@ -1,12 +1,13 @@
 # Ledger — The Language of Business
 
-An interactive, **drill-first accounting course** I built to learn the fundamentals of financial
-accounting cold — the foundation for financial modeling and investment-banking analysis. Inspired by
-the structure of a CFI course, but with **heavier repetition**: every concept is reinforced with
-spaced-repetition flashcards, auto-graded quizzes, and hands-on journal-entry and modeling drills.
+An interactive, **drill-first learning platform** I built to master the language of business end to
+end — from financial accounting through investment-banking modeling to operations-finance analysis.
+Inspired by the structure of a CFI course, but with **heavier repetition**: every concept is reinforced
+with spaced-repetition flashcards, auto-graded quizzes, and hands-on journal-entry and from-scratch
+spreadsheet drills. It has grown into **four courses / 34 modules**.
 
-> **Why I built this:** to prove I can build clean, working software *and* that I know the accounting
-> that underpins every three-statement model — before I have formal work experience to point to.
+> **Why I built this:** to prove I can build clean, working software *and* that I know the finance —
+> accounting, modeling, and operations analysis — cold, before I have formal work experience to point to.
 
 **Live demo:** https://ai-skywalker-nh.github.io/ledger-accounting-course/
 
@@ -43,7 +44,7 @@ spaced-repetition flashcards, auto-graded quizzes, and hands-on journal-entry an
 
 Each module has ~6 lessons, ~16 flashcards, 8 quiz questions, and hands-on drills.
 
-## Course 2 — Financial Statement Analysis & Modeling (complete, FM-1–FM-8)
+## Course 2 — Financial Statement Analysis & Modeling (complete, FM-1–FM-10)
 
 1. Reading & Spreading Financial Statements
 2. Ratio Analysis (Liquidity, Leverage, Profitability, Efficiency, DuPont)
@@ -53,11 +54,43 @@ Each module has ~6 lessons, ~16 flashcards, 8 quiz questions, and hands-on drill
 6. DCF Valuation
 7. Comparable Company Analysis
 8. LBO Modeling Basics
+9. Precedent Transaction Analysis
+10. Sensitivity & Scenario Analysis
 
 Course 2's drills are **all in-screen, from-scratch spreadsheet builds** — you construct the model with
 real formulas, keyboard-first. Highlights: a full three-statement model that recomputes to a zero
-balance check (FM-3), a complete DCF that resolves to $10.00/share (FM-6), and an LBO returns build with
-MOIC and IRR (FM-8).
+balance check (FM-3), a complete DCF that resolves to $10.00/share (FM-6), an LBO returns build with
+MOIC and IRR (FM-8), and a two-variable WACC × terminal-growth data table (FM-10).
+
+## Course 3 — Operations Finance: The Network & Its Numbers (complete, OF-1–OF-8)
+
+Prep for an operations-finance / FP&A analyst role embedded in a transportation/logistics network.
+
+1. The Role & the Mission
+2. How the Fulfillment & Transportation Network Works
+3. The Language of Operations
+4. Cost Drivers & Unit Economics
+5. Operational & Financial Metrics (WBR / MBR)
+6. Forecasting, Budgeting & the Annual Plan
+7. Variance Analysis & Bridges
+8. Cost-Savings Methodology & Business Cases
+
+## Course 4 — The Operator-Analyst's Craft (complete, OT-1–OT-8)
+
+The hard skills (SQL, data, financial systems) and soft skills (writing, Leadership Principles,
+storytelling, program leadership) that make the analysis land.
+
+1. Leadership Principles in Practice
+2. The Writing Culture: Narratives & White Papers
+3. Business Reviews & Mechanisms
+4. SQL & Data Fundamentals for Analysts
+5. Data Tools & Financial Systems
+6. Simplifying Complexity & Data Storytelling
+7. Driving Programs from Concept to Execution
+8. AI-Augmented Financial Analysis
+
+**34 modules across four courses** — ~200 lessons, ~540 flashcards, ~270 quiz questions, and ~140
+hands-on drills, from the accounting equation to LBO returns to running an operations business review.
 
 ## Tech
 
@@ -79,17 +112,13 @@ open index.html      # macOS
 
 ## Add a module
 
-1. Copy `data/module-01-accounting-equation.js` to a new file and edit the content.
-2. Register it in `data/course.js` (`COURSE.modules`).
+1. Copy an existing `data/*.js` module to a new file and edit the content.
+2. Register its id under the right course in `data/course.js` (`COURSES[].modules`).
 3. Add its `<script>` tag in `index.html`.
 
 The content shape (lessons / flashcards / quiz / drills) is documented inline in the Module 1 file.
-
-## Roadmap
-
-- [ ] Fill in Modules 2–8 (debits & credits deep-dive → linking the three statements)
-- [ ] A **second course**: financial-statement analysis & modeling for investment banking
-- [ ] Deploy to GitHub Pages
+Quantitative drills validate against an in-browser spreadsheet engine (`spreadsheet.js`) that supports
+`+ − × ÷ ^`, parentheses, cell references, ranges, and `SUM/AVERAGE/MIN/MAX/ABS/ROUND/POWER/SQRT`.
 
 ---
 

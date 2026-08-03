@@ -91,7 +91,7 @@ window.COURSES = [
       { id: "ot-05", status: "available" },
       { id: "ot-06", status: "available" },
       { id: "ot-07", status: "available" },
-      { id: "ot-08", status: "coming-soon", title: "AI-Augmented Financial Analysis", est: "~55 min" },
+      { id: "ot-08", status: "available" },
     ],
   },
 ];
