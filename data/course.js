@@ -60,4 +60,38 @@ window.COURSES = [
       { id: "fm-10", status: "available" },
     ],
   },
+  {
+    id: "ops-finance",
+    title: "Operations Finance: The Network & Its Numbers",
+    subtitle: "Domain knowledge + modeling for an operations-finance analyst role",
+    tagline:
+      "The 'what': understand a transportation/logistics network at a granular level and turn it into financial insight — the role, the lingo, cost drivers, metrics, forecasting, variance analysis, and cost-savings business cases. Speak to the modeling and perform it.",
+    modules: [
+      { id: "of-01", status: "available" },
+      { id: "of-02", status: "coming-soon", title: "How the Fulfillment & Transportation Network Works", est: "~65 min" },
+      { id: "of-03", status: "coming-soon", title: "The Language of Operations", est: "~50 min" },
+      { id: "of-04", status: "coming-soon", title: "Cost Drivers & Unit Economics", est: "~70 min" },
+      { id: "of-05", status: "coming-soon", title: "Operational & Financial Metrics (WBR / MBR)", est: "~60 min" },
+      { id: "of-06", status: "coming-soon", title: "Forecasting, Budgeting & the Annual Plan", est: "~70 min" },
+      { id: "of-07", status: "coming-soon", title: "Variance Analysis & Bridges", est: "~60 min" },
+      { id: "of-08", status: "coming-soon", title: "Cost-Savings Methodology & Business Cases", est: "~80 min" },
+    ],
+  },
+  {
+    id: "analyst-craft",
+    title: "The Operator-Analyst's Craft",
+    subtitle: "Hard skills (SQL, data, systems) + soft skills (writing, LPs, storytelling, program leadership)",
+    tagline:
+      "The 'how': the tools and behaviors that make an analyst effective — Leadership Principles, the narrative/white-paper writing culture, business reviews, SQL & data fundamentals, financial systems, simplifying complexity, driving programs to execution, and AI-augmented analysis.",
+    modules: [
+      { id: "ot-01", status: "coming-soon", title: "Leadership Principles in Practice", est: "~50 min" },
+      { id: "ot-02", status: "coming-soon", title: "The Writing Culture: Narratives & White Papers", est: "~60 min" },
+      { id: "ot-03", status: "coming-soon", title: "Business Reviews & Mechanisms", est: "~50 min" },
+      { id: "ot-04", status: "coming-soon", title: "SQL & Data Fundamentals for Analysts", est: "~80 min" },
+      { id: "ot-05", status: "coming-soon", title: "Data Tools & Financial Systems", est: "~50 min" },
+      { id: "ot-06", status: "coming-soon", title: "Simplifying Complexity & Data Storytelling", est: "~50 min" },
+      { id: "ot-07", status: "coming-soon", title: "Driving Programs from Concept to Execution", est: "~60 min" },
+      { id: "ot-08", status: "coming-soon", title: "AI-Augmented Financial Analysis", est: "~55 min" },
+    ],
+  },
 ];
