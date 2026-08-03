@@ -200,6 +200,7 @@
 
   function route() {
     clearTimers();
+    if (window.Narrator) Narrator.stop();
     const r = parseHash();
     window.scrollTo(0, 0);
     if (r.view === "shortcuts") renderShortcuts();
@@ -358,7 +359,40 @@
   /* =======================================================================
      LEARN (lessons)
      ======================================================================= */
+  function narrateBarHTML() {
+    if (!window.Narrator || !Narrator.supported) return "";
+    const rate = Narrator.getRate();
+    const rates = [0.8, 1, 1.2, 1.5].map((r) => `<option value="${r}" ${r === rate ? "selected" : ""}>${r}×</option>`).join("");
+    const vs = Narrator.englishVoices();
+    const cur = Narrator.getVoiceURI();
+    const vopts = vs.length
+      ? vs.map((v) => `<option value="${v.voiceURI}" ${v.voiceURI === cur ? "selected" : ""}>${v.name}</option>`).join("")
+      : `<option value="">Default voice</option>`;
+    return `<div class="narrate-bar">
+      <button class="btn narrate-play" id="narratePlay">🔊 Listen</button>
+      <button class="btn btn-ghost narrate-stop" id="narrateStop" title="Stop narration">■</button>
+      <label>Speed <select id="narrateRate">${rates}</select></label>
+      <label>Voice <select id="narrateVoice">${vopts}</select></label>
+      <span class="narrate-status" id="narrateStatus"></span>
+    </div>`;
+  }
+  function wireNarrateBar(getText) {
+    if (!window.Narrator || !Narrator.supported) return;
+    const play = $("#narratePlay"), status = $("#narrateStatus");
+    if (!play) return;
+    const sync = (s) => {
+      play.textContent = s === "speaking" ? "⏸ Pause" : s === "paused" ? "▶ Resume" : "🔊 Listen";
+      if (status) status.textContent = s === "speaking" ? "Narrating…" : s === "paused" ? "Paused" : "";
+    };
+    play.onclick = () => Narrator.toggle(getText(), sync);
+    $("#narrateStop").onclick = () => { Narrator.stop(); sync("idle"); };
+    $("#narrateRate").onchange = (e) => Narrator.setRate(e.target.value);
+    $("#narrateVoice").onchange = (e) => Narrator.setVoiceURI(e.target.value);
+    sync(Narrator.state());
+  }
+
   function renderLessons(mid) {
+    if (window.Narrator) Narrator.stop();
     const mod = Ledger.modules[mid];
     const m = modState(mid);
     UI.lessonIdx = clamp(UI.lessonIdx, 0, mod.lessons.length - 1);
@@ -379,6 +413,7 @@
       <div class="lesson-layout">
         <aside class="lesson-nav"><ol>${nav}</ol></aside>
         <article class="card lesson-body" style="padding:26px 30px">
+          ${narrateBarHTML()}
           ${l.html}
           <div class="lesson-foot">
             <button class="btn btn-ghost" id="prevL" ${UI.lessonIdx === 0 ? "disabled" : ""}>← Previous</button>
@@ -387,6 +422,13 @@
           </div>
         </article>
       </div>`;
+
+    const article = $(".lesson-body");
+    wireNarrateBar(() => {
+      const clone = article.cloneNode(true);
+      clone.querySelectorAll(".narrate-bar, .lesson-foot, .eyebrow").forEach((n) => n.remove());
+      return clone.textContent.replace(/\s+/g, " ").trim();
+    });
 
     $$(".lesson-nav button").forEach((b) => (b.onclick = () => { UI.lessonIdx = +b.dataset.i; renderLessons(mid); }));
     $("#prevL").onclick = () => { UI.lessonIdx--; renderLessons(mid); };
@@ -435,6 +477,7 @@
     const total = queue.length;
 
     function next() {
+      if (window.Narrator) Narrator.stop();
       if (queue.length === 0) {
         panel.innerHTML = `
           <div class="result card">
@@ -451,7 +494,7 @@
       const card = queue[0];
       panel.innerHTML = `
         <div class="study-wrap">
-          <div class="study-meta"><span>Flashcards</span><span>${done + 1} / ${done + queue.length}</span></div>
+          <div class="study-meta"><span>Flashcards ${window.Narrator && Narrator.supported ? '<button class="flash-speak" id="fspeak" title="Read this card aloud">🔊</button>' : ""}</span><span>${done + 1} / ${done + queue.length}</span></div>
           <div class="flashcard" id="fc" tabindex="0" role="button" aria-label="Flip card">
             <div class="flashcard-inner">
               <div class="flash-face flash-front">
@@ -483,6 +526,11 @@
       fc.onclick = () => { if (!fc.classList.contains("flipped")) flip(); };
       fc.onkeydown = (e) => { if (e.code === "Space" || e.code === "Enter") { e.preventDefault(); if (!fc.classList.contains("flipped")) flip(); } };
       fc.focus();
+
+      if (window.Narrator && Narrator.supported) {
+        const sp = $("#fspeak");
+        if (sp) sp.onclick = (e) => { e.stopPropagation(); Narrator.speak(fc.classList.contains("flipped") ? card.back : card.front); };
+      }
 
       function grade(g) {
         const rec = gradeCard(mid, card.id, g);
@@ -767,6 +815,17 @@
   }
 
   /* --------------------------------------------------------------- boot */
+  if (window.Narrator && Narrator.supported) {
+    // voices can load asynchronously; refresh the picker if it's on screen
+    Narrator.onVoicesChanged(() => {
+      const sel = $("#narrateVoice");
+      if (!sel) return;
+      const cur = Narrator.getVoiceURI();
+      const vs = Narrator.englishVoices();
+      if (vs.length) sel.innerHTML = vs.map((v) => `<option value="${v.voiceURI}" ${v.voiceURI === cur ? "selected" : ""}>${v.name}</option>`).join("");
+    });
+    window.addEventListener("beforeunload", () => Narrator.stop());
+  }
   window.addEventListener("hashchange", route);
   renderTopbar();
   route();

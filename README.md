@@ -28,6 +28,8 @@ spreadsheet drills. It has grown into **four courses / 34 modules**.
     with arrows / Tab / Enter / F2), and a live mouse-usage counter — with an optional strict "mouse =
     fail" mode — trains you to work without the trackpad, the way modelers do.
 - **Excel Shortcuts reference** — a searchable, categorized tab of Windows + Mac shortcuts.
+- **Audio narration** — a "🔊 Listen" bar on every lesson (play/pause, speed, voice picker) plus read-aloud
+  on flashcards, for auditory reinforcement. Uses the browser's built-in Web Speech API — no audio files.
 - **Progress & streaks** — per-module mastery %, lesson/card/quiz/drill completion, and a daily study
   streak. All saved locally in your browser.
 
