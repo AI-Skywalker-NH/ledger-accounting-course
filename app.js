@@ -57,12 +57,13 @@
   }
   function modState(id) {
     if (!STATE.modules[id])
-      STATE.modules[id] = { lessons: {}, cards: {}, quiz: { best: 0 }, drills: {} };
+      STATE.modules[id] = { lessons: {}, cards: {}, quiz: { best: 0 }, drills: {}, notes: {} };
     const m = STATE.modules[id];
     m.lessons = m.lessons || {};
     m.cards = m.cards || {};
     m.quiz = m.quiz || { best: 0 };
     m.drills = m.drills || {};
+    m.notes = m.notes || {};
     return m;
   }
 
@@ -391,6 +392,64 @@
     sync(Narrator.state());
   }
 
+  /* ---- Notes → DOCX export ---- */
+  function courseOf(mid) {
+    for (const c of COURSES) if (c.modules.some((e) => e.id === mid)) return c;
+    return null;
+  }
+  function sanitizeName(s) {
+    return String(s || "").replace(/[\\/:*?"<>|]+/g, " - ").replace(/\s+/g, " ").trim().slice(0, 120) || "Untitled";
+  }
+  function downloadBlob(blob, filename) {
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(a.href), 1500);
+  }
+  function buildModuleDocx(mid) {
+    const mod = Ledger.modules[mid];
+    const m = modState(mid);
+    const course = courseOf(mid);
+    const sections = [];
+    (mod.lessons || []).forEach((l, i) => {
+      const note = (m.notes[l.id] || "").trim();
+      if (note) sections.push({ heading: `${i + 1}. ${l.title}`, paragraphs: note.split(/\n+/).map((s) => s.trim()).filter(Boolean) });
+    });
+    return {
+      blob: Docx.build({ title: `${course ? course.title + " — " : ""}${mod.title}`, subtitle: "Course notes", sections }),
+      hasNotes: sections.length > 0,
+      courseName: sanitizeName(course ? course.title : "Course"),
+      moduleFolder: sanitizeName(mod.title),
+      fileName: sanitizeName(mod.title) + " - Notes.docx",
+    };
+  }
+  async function exportModuleNotes(mid, opts) {
+    opts = opts || {};
+    const { blob, hasNotes, courseName, moduleFolder, fileName } = buildModuleDocx(mid);
+    if (!hasNotes) { if (!opts.auto) toast("No notes yet for this module"); return; }
+    if (window.LedgerFS && LedgerFS.supported) {
+      const has = await LedgerFS.hasFolder();
+      if (!has) {
+        if (opts.auto) { toast("Module notes ready — set a Ledger folder to auto-save"); return; }
+        try { await LedgerFS.chooseFolder(); } catch (e) { downloadBlob(blob, `${courseName} - ${fileName}`); toast("Downloaded (folder not set)"); return; }
+      }
+      try {
+        const path = await LedgerFS.writeDocx(courseName, moduleFolder, fileName, blob);
+        toast("✅ Saved to " + path);
+        return;
+      } catch (e) {
+        downloadBlob(blob, `${courseName} - ${fileName}`);
+        toast(e && e.message === "denied" ? "Permission denied — downloaded instead" : "Saved to Downloads instead");
+        return;
+      }
+    }
+    downloadBlob(blob, `${courseName} - ${fileName}`);
+    toast("Downloaded — drag into your Ledger folder");
+  }
+
   function renderLessons(mid) {
     if (window.Narrator) Narrator.stop();
     const mod = Ledger.modules[mid];
@@ -421,7 +480,26 @@
             <button class="btn btn-ghost" id="nextL" ${UI.lessonIdx === mod.lessons.length - 1 ? "disabled" : ""}>Next →</button>
           </div>
         </article>
+        <aside class="lesson-notes">
+          <div class="ln-head">📝 Notes · Lesson ${UI.lessonIdx + 1}</div>
+          <textarea id="lessonNote" placeholder="Type your notes for this lesson…"></textarea>
+          <div class="ln-actions">
+            <button class="btn btn-primary" id="exportNotes">Export module → .docx</button>
+            ${window.LedgerFS && LedgerFS.supported ? `<button class="btn btn-ghost" id="setFolder" title="Choose where the ledger folder lives">📁</button>` : ""}
+          </div>
+          <div class="ln-hint muted">${window.LedgerFS && LedgerFS.supported ? "Saves to <code>ledger/&lt;course&gt;/&lt;module&gt;/</code>; auto-exports when you finish the module." : "Downloads the .docx — use Chrome/Edge to save straight into folders."}</div>
+        </aside>
       </div>`;
+
+    const noteEl = $("#lessonNote");
+    if (noteEl) {
+      noteEl.value = m.notes[l.id] || "";
+      noteEl.oninput = () => { m.notes[l.id] = noteEl.value; save(); };
+    }
+    const exportBtn = $("#exportNotes");
+    if (exportBtn) exportBtn.onclick = () => exportModuleNotes(mid);
+    const setFolderBtn = $("#setFolder");
+    if (setFolderBtn) setFolderBtn.onclick = async () => { try { await LedgerFS.chooseFolder(); toast("Ledger folder set ✓"); } catch (e) {} };
 
     const article = $(".lesson-body");
     wireNarrateBar(() => {
@@ -439,6 +517,7 @@
       touchStreak();
       const allDone = mod.lessons.every((x) => m.lessons[x.id]);
       toast(allDone ? "All lessons complete! 🎓" : "Lesson complete ✓");
+      if (allDone) exportModuleNotes(mid, { auto: true });
       if (UI.lessonIdx < mod.lessons.length - 1) UI.lessonIdx++;
       renderModule(mid, "learn");
     };

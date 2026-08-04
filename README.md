@@ -30,6 +30,9 @@ spreadsheet drills. It has grown into **four courses / 34 modules**.
 - **Excel Shortcuts reference** — a searchable, categorized tab of Windows + Mac shortcuts.
 - **Audio narration** — a "🔊 Listen" bar on every lesson (play/pause, speed, voice picker) plus read-aloud
   on flashcards, for auditory reinforcement. Uses the browser's built-in Web Speech API — no audio files.
+- **Per-lesson notes → Word export** — a notes panel on each lesson (auto-saved locally). Each module's
+  notes export to a real `.docx` (generated in-browser, zero dependencies). In Chrome/Edge, granting a
+  folder once auto-saves to `ledger/<course>/<module>/<module> - Notes.docx`; other browsers download it.
 - **Progress & streaks** — per-module mastery %, lesson/card/quiz/drill completion, and a daily study
   streak. All saved locally in your browser.
 
